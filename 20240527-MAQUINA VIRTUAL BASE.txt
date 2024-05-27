@@ -1,0 +1,72 @@
+MAQUINA VIRTUAL BASE
+MINIOS-DOCKER-BASE
+REDES:
+- ADAPTADOR 1 -> NAT
+- ADAPTADOR 2 -> ADAPT. SOLO ANFITRION(192.168.56.202)
+- ADAPTADOR 3 -> ADAPT. PUENTE(INTENAMENTE SIN CONFIGURAR)
+PROCESO DE INSTALACIÒN
+- INSTALACIÒN EN DISCO DURO MINIOS
+- ACTUALIZACIÒN DEL SISTEMA (HABILITACION DEL SSH)
+- INSTALACIÒN DE DOCKER
+
+-- ACTUALIZACIÒN DEL SISTEMA --
+sudo apt update
+sudo service ssh start
+sudo systemctl enable ssh
+sudo apt udpate
+sudo apt upgrade -y
+-- INSTALAR APT-FAST --
+sudo add-apt-repository ppa:apt-fast/stable
+sudo apt-get -y install apt-fast
+sudo apt-fast upgrade -y
+sudo apt -f install
+sudo shutdown -r now
+-- INSTALAR GIT--
+sudo apt-fast install git
+git clone https://github.com/docentegit/tallerGit.git
+cd tallerGit/
+bash docker-install.sh 
+sudo shutdown -r now
+-- HOLA MUNDO --
+docker run helloword
+-IPS ASIGNADOS
+- MINIOS-APACHE 192.168.56.200
+- MINIOS-CONTENEDOR 192.168.56.201
+- MINIOS-DOCKER-BASE  192.168.56.202
+-- Por cada servicio asignarle un IP
+-- SERVIDOR DNS -> 192.168.56.10 (DNS.APELLIDO.LAN)
+-- SERVIDOR DOKUWIKI -> 192.168.56.250 (DW.APELLIDO.LAN)
+
+DESCARGAR LA IMAGEN DE PIHOLE
+- Crear la carpeta docker/dns
+- CLONAR EL REPOSITORIO DE GITHUT DE LA MATERIA git clone https://github.com/docentegit/202405TecnologiaWebI.git
+
+- COPIAR EL ARCHIVO docker-compose.pihole.yaml
+cp 202405TecnologiaWebI/docker-compose.pihole.yaml docker/dns/docker-compose.yaml
+- Ejecutar el comando para levantar el contenedor
+cd docker/dns
+docker compose up -d
+-- ELIMINAR EL CACHE DE DNS
+- sudo systemctl disable systemd-resolved 
+- EDITAR el ARCHIVO /etc/NetworkManager/NetworkManager.conf 
+dns=dnsmasq
+cambiar por
+dns=default
+- Reiniciar el sistema
+sudo shutdown -r now
+INGRESAR ADMINISTRADOR PI-HOLE
+http://192.168.56.10/admin (pwd 123123)
+- ADICIONAR UN REGISTRO DE DNS
+-- INGRESAR Local DNS -> DNS Records
+-- Dominio: dns.<zsu-apellido>.lan -> 192.168.56.10
+-- Adicionarlo
+
+VERIFICACIÒN
+- INSTALAR:  sudo apt-fast install dnsutils
+dig @192.168.56.10 dns.lopez.lan
+
+
+-verificaciòn en otra maquina (MINIOS-DOCKER-BASE)
+ editar 
+sudo mousepad /etc/resolv.conf
+nameserver 192.168.56.10
